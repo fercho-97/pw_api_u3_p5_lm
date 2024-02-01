@@ -1,19 +1,23 @@
 package com.example.demo.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.repository.modelo.Estudiante;
 import com.example.demo.service.IEstudianteService;
 
-import jakarta.persistence.criteria.CriteriaBuilder.In;
+
 
 //API: determinada por el proyecto JAVA	
 
@@ -35,9 +39,9 @@ public class EstudianteControllerRestFul {
 	}
 	
 	//GET
-	@GetMapping(path = "/buscar")
-	public Estudiante buscar() {
-		return this.estudianteService.buscar(1);
+	@GetMapping(path = "/buscar/{id}")
+	public Estudiante buscar(@PathVariable Integer id) {
+		return this.estudianteService.buscar(id);
 	
 	}
 	
@@ -56,11 +60,20 @@ public class EstudianteControllerRestFul {
 	}
 	
 	
-	@DeleteMapping(path = "/borrar")
-	public void borrar() {
-		this.estudianteService.borrar(3);
+	@DeleteMapping(path = "/borrar/{id}")
+	public void borrar(@PathVariable Integer id) {
+		this.estudianteService.borrar(id);
 		
 	}
-	//http://localhost:8080/API/v1.0/Matricula/estudiantes/buscar
+	//http://localhost:8080/API/v1.0/Matricula/estudiantes/buscarTodos?genero=M
+	//http://localhost:8080/API/v1.0/Matricula/estudiantes/buscarTodos?genero=M&edad=100
+	@GetMapping(path =  "/buscarTodos")
+	public List<Estudiante> buscarTodos(@RequestParam String genero) {
+		return this.estudianteService.buscarTodos(genero);
+		
+	}
+
+	
+	
 
 }

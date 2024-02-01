@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import java.util.List;
+
 import com.example.demo.repository.modelo.Estudiante;
 
 public interface IEstudianteService {
@@ -16,6 +18,8 @@ public interface IEstudianteService {
 	
 	//READ
 	public Estudiante buscar (Integer id);
+	
+	public List<Estudiante> buscarTodos (String genero);
 	
 	public void borrar (Integer id);
 }
