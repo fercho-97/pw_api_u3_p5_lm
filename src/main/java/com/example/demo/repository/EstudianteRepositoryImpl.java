@@ -34,7 +34,7 @@ public class EstudianteRepositoryImpl implements IEstudianteRepository {
 		// SQL: UPDATE estudiante e set e.estu_nombre:valor, e.estu_apellido=: valor2
 		// WHERE
 		Query query = this.entityManager
-				.createQuery("UPDATE Estudiante e SET e.nombre= :valor1, e.apellido= : valor2 WHERE e.id= :valor3");
+				.createQuery("UPDATE Estudiante e SET e.nombre= :valor1, e.aepllido= : valor2 WHERE e.id= :valor3");
 		query.setParameter("valor1", nombre);
 		query.setParameter("valor2", apellido);
 		query.setParameter("valor3", id);
