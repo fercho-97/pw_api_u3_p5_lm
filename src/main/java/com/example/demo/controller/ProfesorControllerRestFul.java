@@ -24,40 +24,42 @@ public class ProfesorControllerRestFul {
 	@Autowired
 	private IProfesorService profesorService;
 
-	@PostMapping(path = "/guardar")
+	@PostMapping
 	public void guardar(@RequestBody Profesor profesor) {
 		this.profesorService.guardar(profesor);
 	}
 
-	@GetMapping(path = "/buscar/{id}")
+	@GetMapping(path = "/{id}")
 	public Profesor buscar(@PathVariable Integer id) {
 
 		return this.profesorService.buscar(id);
 	}
 	
-	@GetMapping(path = "/buscarFiltro")
-	public List<Profesor> buscarFiltro(@RequestParam String nivelEducacion, @RequestParam String apellido) {
+	@GetMapping(path = "/f")
+	public List<Profesor> buscarFiltro(@RequestParam(required = false, defaultValue = "") String nivelEducacion, @RequestParam(required = false, defaultValue = "") String apellido) {
 
 		return this.profesorService.buscarFiltro(nivelEducacion, apellido);
 	}
 	
-	@GetMapping(path = "/buscarTodos")
+	@GetMapping
 	public List<Profesor> buscarTodos() {
 
 		return this.profesorService.buscarTodos();
 	}
 
-	@PutMapping(path = "/actualizar")
-	public void actualziar(@RequestBody Profesor profesor) {
+	@PutMapping(path = "/{id}")
+	public void actualziar(@RequestBody Profesor profesor, @PathVariable Integer id) {
+		
+		profesor.setId(id);
 		this.profesorService.actualizar(profesor);
 	}
 
-	@PatchMapping(path = "/actualizarParcial")
-	public void actualziarParcial(@RequestBody Profesor profesor) {
-		this.profesorService.actualizarParcial(profesor.getDireccion(), profesor.getNivelEducacion(), profesor.getCorreo(), profesor.getId()); 
+	@PatchMapping(path = "/{id}")
+	public void actualziarParcial(@RequestBody Profesor profesor, @PathVariable Integer id) {
+		this.profesorService.actualizarParcial(profesor.getDireccion(), profesor.getNivelEducacion(), profesor.getCorreo(), id); 
 	}
 	
-	@DeleteMapping(path = "/borrar/{id}")
+	@DeleteMapping(path = "/{id}")
 	public void borrar(@PathVariable Integer id) {
 		
 		this.profesorService.borrar(id);
