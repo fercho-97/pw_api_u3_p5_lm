@@ -3,6 +3,10 @@ package com.example.demo.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -24,45 +28,63 @@ public class ProfesorControllerRestFul {
 	@Autowired
 	private IProfesorService profesorService;
 
-	@PostMapping
+	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
 	public void guardar(@RequestBody Profesor profesor) {
 		this.profesorService.guardar(profesor);
 	}
 
-	@GetMapping(path = "/{id}")
-	public Profesor buscar(@PathVariable Integer id) {
+	@GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Profesor> buscar(@PathVariable Integer id) {
 
-		return this.profesorService.buscar(id);
-	}
-	
-	@GetMapping(path = "/f")
-	public List<Profesor> buscarFiltro(@RequestParam(required = false, defaultValue = "") String nivelEducacion, @RequestParam(required = false, defaultValue = "") String apellido) {
+		Profesor prof = this.profesorService.buscar(id);
 
-		return this.profesorService.buscarFiltro(nivelEducacion, apellido);
-	}
-	
-	@GetMapping
-	public List<Profesor> buscarTodos() {
-
-		return this.profesorService.buscarTodos();
+		return ResponseEntity.status(HttpStatus.OK).body(prof);
 	}
 
-	@PutMapping(path = "/{id}")
+	@GetMapping(path = "/f", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Profesor>> buscarFiltro(
+			@RequestParam(required = false, defaultValue = "Doctorado") String nivelEducacion,
+			@RequestParam(required = false, defaultValue = "Torres") String apellido) {
+
+		List<Profesor> listProf = this.profesorService.buscarFiltro(nivelEducacion, apellido);
+
+		HttpHeaders headers = new HttpHeaders();
+
+		headers.add("mensaje_aceptacion", "Se ha encontrado najo los parametros establecidos");
+		headers.add("mensaje_info", "se ha buscado en la bd ...");
+		return new ResponseEntity<>(listProf, headers, HttpStatus.OK);
+	}
+
+	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Profesor>> buscarTodos() {
+
+		List<Profesor> listProf = this.profesorService.buscarTodos();
+		HttpHeaders headers = new HttpHeaders();
+
+		headers.add("mensaje_aceptacion", "Se ha encontrado todos");
+		headers.add("mensaje_info", "se ha buscado en la bd ...");
+		return new ResponseEntity<>(listProf, headers, HttpStatus.OK);
+	}
+
+	@PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public void actualziar(@RequestBody Profesor profesor, @PathVariable Integer id) {
-		
+
 		profesor.setId(id);
 		this.profesorService.actualizar(profesor);
 	}
 
-	@PatchMapping(path = "/{id}")
+	@PatchMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public void actualziarParcial(@RequestBody Profesor profesor, @PathVariable Integer id) {
-		this.profesorService.actualizarParcial(profesor.getDireccion(), profesor.getNivelEducacion(), profesor.getCorreo(), id); 
+		this.profesorService.actualizarParcial(profesor.getDireccion(), profesor.getNivelEducacion(),
+				profesor.getCorreo(), id);
 	}
-	
+
 	@DeleteMapping(path = "/{id}")
-	public void borrar(@PathVariable Integer id) {
-		
+	public ResponseEntity<String> borrar(@PathVariable Integer id) {
+
 		this.profesorService.borrar(id);
+		
+		return ResponseEntity.ok("se elimino correctamente");
 	}
 
 }
