@@ -3,6 +3,9 @@ package com.example.demo.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -33,20 +36,26 @@ public class EstudianteControllerRestFul {
 	
 	
 	//metodso->capacaidades: guardar
-	@PostMapping
+	@PostMapping(consumes = MediaType.APPLICATION_XML_VALUE )
 	public void guardar(@RequestBody Estudiante estudiante) {
 		this.estudianteService.guardar(estudiante);
 	}
 	
 	//GET
-	@GetMapping(path = "/{id}")
-	public Estudiante buscar(@PathVariable Integer id) {
-		return this.estudianteService.buscar(id);
+	@GetMapping(path = "/{id}", produces = MediaType.APPLICATION_XML_VALUE)
+	public ResponseEntity<Estudiante>  buscar(@PathVariable Integer id) {
+		//2xx - grupo satyisfactorio
+				//240: Recurso Estudiante encontrado satisfactoriamente
+				
+		Estudiante estu = this.estudianteService.buscar(id);
+		
+
+		return ResponseEntity.status(240).body(estu);
 	
 	}
 	
 	
-	@PutMapping(path = "/{id}")
+	@PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public void actualizar(@RequestBody Estudiante estudiante, @PathVariable Integer id) {
 		
 		estudiante.setId(id);
@@ -55,7 +64,7 @@ public class EstudianteControllerRestFul {
 	}
 	
 	
-	@PatchMapping(path = "/{id}")
+	@PatchMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public void actualizarParcial(@RequestBody Estudiante estudiante, @PathVariable Integer id) {
 		
 		this.estudianteService.actualizarParcial(estudiante.getAepllido(), estudiante.getNombre(), id);
@@ -69,9 +78,18 @@ public class EstudianteControllerRestFul {
 	}
 	//http://localhost:8080/API/v1.0/Matricula/estudiantes/buscarTodos?genero=M
 	//http://localhost:8080/API/v1.0/Matricula/estudiantes/buscarTodos?genero=M&edad=100
-	@GetMapping
-	public List<Estudiante> buscarTodos(@RequestParam(required = false, defaultValue = "M") String genero) {
-		return this.estudianteService.buscarTodos(genero);
+	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Estudiante>>  buscarTodos(@RequestParam(required = false, defaultValue = "M") String genero) {
+		
+		List<Estudiante> listEstu= this.estudianteService.buscarTodos(genero);
+		
+		
+		HttpHeaders cabecera = new HttpHeaders();
+		
+		cabecera.add("mensaje_242", "Lista consultada con filtros de manera satisfactoria");
+		cabecera.add("mensaje_info", "El sistema corroboró la busqueda");
+		//new ResponseEntity<>(body, cabecera, cod http)
+		return new ResponseEntity<>(listEstu,cabecera,242 );
 		
 	}
 
