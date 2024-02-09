@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,6 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.repository.modelo.Estudiante;
 import com.example.demo.service.IEstudianteService;
+import com.example.demo.service.IMateriaService;
+import com.example.demo.service.to.EstudianteTO;
+import com.example.demo.service.to.MateriaTO;
 
 
 
@@ -35,14 +39,17 @@ public class EstudianteControllerRestFul {
 	private IEstudianteService estudianteService;
 	
 	
+	@Autowired
+	private IMateriaService materiaService;
+	
 	//metodso->capacaidades: guardar
-	@PostMapping(consumes = MediaType.APPLICATION_XML_VALUE )
+	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE )
 	public void guardar(@RequestBody Estudiante estudiante) {
 		this.estudianteService.guardar(estudiante);
 	}
 	
 	//GET
-	@GetMapping(path = "/{id}", produces = MediaType.APPLICATION_XML_VALUE)
+	@GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Estudiante>  buscar(@PathVariable Integer id) {
 		//2xx - grupo satyisfactorio
 				//240: Recurso Estudiante encontrado satisfactoriamente
@@ -78,7 +85,7 @@ public class EstudianteControllerRestFul {
 	}
 	//http://localhost:8080/API/v1.0/Matricula/estudiantes/buscarTodos?genero=M
 	//http://localhost:8080/API/v1.0/Matricula/estudiantes/buscarTodos?genero=M&edad=100
-	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/temp")
 	public ResponseEntity<List<Estudiante>>  buscarTodos(@RequestParam(required = false, defaultValue = "M") String genero) {
 		
 		List<Estudiante> listEstu= this.estudianteService.buscarTodos(genero);
@@ -93,6 +100,26 @@ public class EstudianteControllerRestFul {
 		
 	}
 
+	
+	
+	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<EstudianteTO>>  buscarTodosHateoas() {
+		
+		List<EstudianteTO> listEstu= this.estudianteService.buscarTodosTO();
+		
+		return  ResponseEntity.status(HttpStatus.OK).body(listEstu);
+		
+	}
+	
+	//http://localhost:8080/API/v1.0/Matricula/estudiantes/
+	@GetMapping(path = "/{id}/materias", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<MateriaTO>> conusltarMateriasPorId(@PathVariable Integer id){
+		
+		List<MateriaTO> listMaterias =this.materiaService.buscarPorIdEstudinate(id);
+		
+		return ResponseEntity.status(HttpStatus.OK).body(listMaterias);
+	}
+	
 	
 	
 
