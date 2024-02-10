@@ -8,14 +8,15 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.repository.IEstudianteRepository;
 import com.example.demo.repository.modelo.Estudiante;
+import com.example.demo.service.to.EstudianteLigeroTO;
 import com.example.demo.service.to.EstudianteTO;
 
 @Service
-public class IEstudianteServiceImpl implements IEstudianteService{
+public class IEstudianteServiceImpl implements IEstudianteService {
 
 	@Autowired
-	private IEstudianteRepository estudianteRepository; 
-	
+	private IEstudianteRepository estudianteRepository;
+
 	@Override
 	public void guardar(Estudiante estudiante) {
 		// TODO Auto-generated method stub
@@ -56,37 +57,55 @@ public class IEstudianteServiceImpl implements IEstudianteService{
 	public List<EstudianteTO> buscarTodosTO() {
 		// TODO Auto-generated method stub
 		List<Estudiante> list = this.estudianteRepository.seleccionarTodos("M");
-		
+
 		List<EstudianteTO> listaFinal = new ArrayList<>();
-		
-		for(Estudiante est: list) {
+
+		for (Estudiante est : list) {
 			listaFinal.add(this.convertir(est));
 		}
 		return listaFinal;
 	}
-	
-	
-	private EstudianteTO convertir (Estudiante estu) {
-		
+
+	private EstudianteTO convertir(Estudiante estu) {
+
 		EstudianteTO estuTO = new EstudianteTO();
 		estuTO.setApellido(estu.getAepllido());
 		estuTO.setFechaNacimiento(estu.getFechaNacimiento());
 		estuTO.setGenero(estu.getGenero());
 		estuTO.setId(estu.getId());
 		estuTO.setNombre(estu.getNombre());
-		
+
+		estuTO.setCedula(estu.getCedula());
+		estuTO.setRangoEconomico(estu.getRangoEconomico());
+		estuTO.setFacultad(estu.getFacultad());
+		estuTO.setCarrera(estu.getCarrera());
+		estuTO.setGratuidad(estu.getGratuidad());
+
 		return estuTO;
+	}
+
+	private EstudianteLigeroTO convertirLigero(Estudiante estu) {
+
+		EstudianteLigeroTO estuLigeroTO = new EstudianteLigeroTO();
+		estuLigeroTO.setApellido(estu.getAepllido());
+		estuLigeroTO.setId(estu.getId());
+		estuLigeroTO.setCarrera(estu.getCarrera());
+		estuLigeroTO.setGratuidad(estu.getGratuidad());
+
+		return estuLigeroTO;
 	}
 
 	@Override
 	public EstudianteTO buscarTO(Integer id) {
 		// TODO Auto-generated method stub
-		
-		
-		
+
 		return this.convertir(this.estudianteRepository.seleccionar(id));
 	}
 
-
+	@Override
+	public EstudianteLigeroTO buscarEstudianteLigeroTO(Integer id) {
+		// TODO Auto-generated method stub
+		return this.convertirLigero(this.estudianteRepository.seleccionar(id));
+	}
 
 }

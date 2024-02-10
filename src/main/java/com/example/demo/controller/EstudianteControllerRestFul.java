@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.repository.modelo.Estudiante;
 import com.example.demo.service.IEstudianteService;
 import com.example.demo.service.IMateriaService;
+import com.example.demo.service.to.EstudianteLigeroTO;
 import com.example.demo.service.to.EstudianteTO;
 import com.example.demo.service.to.MateriaTO;
 
@@ -139,22 +140,32 @@ public class EstudianteControllerRestFul {
 	
 	
 	
-	@GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/completo/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<EstudianteTO>  buscarTO(@PathVariable Integer id) {
 		
 				
 		EstudianteTO estu = this.estudianteService.buscarTO(id);
 		
 		Link link = linkTo(methodOn(EstudianteControllerRestFul.class).conusltarMateriasPorId(estu.getId())).withRel("materias");
-		
-		Link link2 = linkTo(methodOn(EstudianteControllerRestFul.class).conusltarMateriasPorId(estu.getId())).withSelfRel();
-		
-		
+	
 		estu.add(link);
-		estu.add(link2);
+
 		return ResponseEntity.status(240).body(estu);
 	
 	}
 	
+	@GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<EstudianteLigeroTO>  buscarLigeroTO(@PathVariable Integer id) {
+		
+				
+		EstudianteLigeroTO estu = this.estudianteService.buscarEstudianteLigeroTO(id);
+		
+		Link link = linkTo(methodOn(EstudianteControllerRestFul.class).buscarTO(estu.getId())).withSelfRel();
+		
+		estu.add(link);
+
+		return ResponseEntity.status(240).body(estu);
+	
+	}
 
 }

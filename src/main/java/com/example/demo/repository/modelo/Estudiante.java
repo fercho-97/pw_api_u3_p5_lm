@@ -38,6 +38,22 @@ public class Estudiante {
 	@Column(name = "estu_fecha_nacimiento")
 	private LocalDateTime fechaNacimiento;
 	
+	@Column(name = "estu_cedula")
+	private  String cedula;
+	
+	@Column(name = "estu_rango_economico")
+	private String rangoEconomico;
+	
+	@Column(name = "estu_facultad")
+	private String facultad;
+	
+	@Column(name = "estu_carrera")
+	private String carrera;
+	
+	@Column(name = "estu_gratuidad")
+	private Boolean gratuidad;
+	
+	
 	@OneToMany(mappedBy = "estudiante")
 	private List<Materia> materias;
 	
@@ -80,6 +96,49 @@ public class Estudiante {
 
 	public void setFechaNacimiento(LocalDateTime fechaNacimiento) {
 		this.fechaNacimiento = fechaNacimiento;
+	}
+	
+	
+	
+
+	public String getCedula() {
+		return cedula;
+	}
+
+	public void setCedula(String cedula) {
+		this.cedula = cedula;
+	}
+
+	public String getRangoEconomico() {
+		return rangoEconomico;
+	}
+
+	public void setRangoEconomico(String rangoEconomico) {
+		this.rangoEconomico = rangoEconomico;
+	}
+
+	public String getFacultad() {
+		return facultad;
+	}
+
+	public void setFacultad(String facultad) {
+		this.facultad = facultad;
+	}
+
+	public String getCarrera() {
+		return carrera;
+	}
+
+	public void setCarrera(String carrera) {
+		this.carrera = carrera;
+	}
+
+	public Boolean getGratuidad() {
+		return gratuidad;
+	}
+
+	public void setGratuidad(Boolean gratuidad) {
+		this.gratuidad = gratuidad;
 	}
 
 	public List<Materia> getMaterias() {
