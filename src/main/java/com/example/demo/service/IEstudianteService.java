@@ -24,5 +24,8 @@ public interface IEstudianteService {
 	
 	public List<EstudianteTO> buscarTodosTO ();
 	
+	public EstudianteTO buscarTO (Integer id);
+	
+	
 	public void borrar (Integer id);
 }

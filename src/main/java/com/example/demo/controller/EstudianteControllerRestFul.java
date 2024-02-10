@@ -1,8 +1,14 @@
 package com.example.demo.controller;
 
+
+//guardar estos import
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -49,7 +55,7 @@ public class EstudianteControllerRestFul {
 	}
 	
 	//GET
-	@GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/temp/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Estudiante>  buscar(@PathVariable Integer id) {
 		//2xx - grupo satyisfactorio
 				//240: Recurso Estudiante encontrado satisfactoriamente
@@ -107,6 +113,17 @@ public class EstudianteControllerRestFul {
 		
 		List<EstudianteTO> listEstu= this.estudianteService.buscarTodosTO();
 		
+		for( EstudianteTO estTo: listEstu) {
+			
+			Link link = linkTo(methodOn(EstudianteControllerRestFul.class).conusltarMateriasPorId(estTo.getId())).withRel("materias");
+			
+		
+			
+			estTo.add(link);
+			
+		}
+		
+		
 		return  ResponseEntity.status(HttpStatus.OK).body(listEstu);
 		
 	}
@@ -121,6 +138,23 @@ public class EstudianteControllerRestFul {
 	}
 	
 	
+	
+	@GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<EstudianteTO>  buscarTO(@PathVariable Integer id) {
+		
+				
+		EstudianteTO estu = this.estudianteService.buscarTO(id);
+		
+		Link link = linkTo(methodOn(EstudianteControllerRestFul.class).conusltarMateriasPorId(estu.getId())).withRel("materias");
+		
+		Link link2 = linkTo(methodOn(EstudianteControllerRestFul.class).conusltarMateriasPorId(estu.getId())).withSelfRel();
+		
+		
+		estu.add(link);
+		estu.add(link2);
+		return ResponseEntity.status(240).body(estu);
+	
+	}
 	
 
 }
