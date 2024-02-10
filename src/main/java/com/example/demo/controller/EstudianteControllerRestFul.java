@@ -1,6 +1,5 @@
 package com.example.demo.controller;
 
-
 //guardar estos import
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -31,141 +30,136 @@ import com.example.demo.service.to.EstudianteLigeroTO;
 import com.example.demo.service.to.EstudianteTO;
 import com.example.demo.service.to.MateriaTO;
 
-
-
 //API: determinada por el proyecto JAVA	
-
 
 @RestController
 @RequestMapping(path = "/estudiantes")
 //servicio es la clase controller
 public class EstudianteControllerRestFul {
-	
-	
+
 	@Autowired
 	private IEstudianteService estudianteService;
-	
-	
+
 	@Autowired
 	private IMateriaService materiaService;
-	
-	//metodso->capacaidades: guardar
-	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE )
-	public void guardar(@RequestBody Estudiante estudiante) {
-		this.estudianteService.guardar(estudiante);
-	}
-	
-	//GET
+/*
+	// GET
 	@GetMapping(path = "/temp/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Estudiante>  buscar(@PathVariable Integer id) {
-		//2xx - grupo satyisfactorio
-				//240: Recurso Estudiante encontrado satisfactoriamente
-				
+	public ResponseEntity<Estudiante> buscar(@PathVariable Integer id) {
+		// 2xx - grupo satyisfactorio
+		// 240: Recurso Estudiante encontrado satisfactoriamente
+
 		Estudiante estu = this.estudianteService.buscar(id);
-		
 
 		return ResponseEntity.status(240).body(estu);
-	
+
 	}
-	
-	
-	@PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public void actualizar(@RequestBody Estudiante estudiante, @PathVariable Integer id) {
-		
-		estudiante.setId(id);
-		
-		this.estudianteService.actualizar(estudiante);
-	}
-	
-	
+
 	@PatchMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public void actualizarParcial(@RequestBody Estudiante estudiante, @PathVariable Integer id) {
-		
+
 		this.estudianteService.actualizarParcial(estudiante.getAepllido(), estudiante.getNombre(), id);
 	}
-	
-	
+
+	// http://localhost:8080/API/v1.0/Matricula/estudiantes/buscarTodos?genero=M
+	// http://localhost:8080/API/v1.0/Matricula/estudiantes/buscarTodos?genero=M&edad=100
+	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/temp")
+	public ResponseEntity<List<Estudiante>> buscarTodosGenero(
+			@RequestParam(required = false, defaultValue = "M") String genero) {
+
+		List<Estudiante> listEstu = this.estudianteService.buscarTodosGenero(genero);
+
+		HttpHeaders cabecera = new HttpHeaders();
+
+		cabecera.add("mensaje_242", "Lista consultada con filtros de manera satisfactoria");
+		cabecera.add("mensaje_info", "El sistema corroboró la busqueda");
+		// new ResponseEntity<>(body, cabecera, cod http)
+		return new ResponseEntity<>(listEstu, cabecera, HttpStatus.OK);
+
+	}
+*/
+	// ----------------------------------------------------------------------------------------------------
+
+	// CRUD
+
+	// CREATE
+	// metodso->capacaidades: guardar
+	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+	public void guardar(@RequestBody EstudianteTO estudianteTO) {
+		this.estudianteService.guardar(estudianteTO);
+	}
+
+	// READ
+	@GetMapping(path = "/completo/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<EstudianteTO> buscarTO(@PathVariable Integer id) {
+
+		EstudianteTO estu = this.estudianteService.buscarTO(id);
+
+		Link link = linkTo(methodOn(EstudianteControllerRestFul.class).conusltarMateriasPorId(estu.getId()))
+				.withRel("materias");
+
+		estu.add(link);
+
+		return ResponseEntity.status(HttpStatus.OK).body(estu);
+
+	}
+
+	// READ - ALL
+
+	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<EstudianteTO>> buscarTodosHateoas() {
+
+		List<EstudianteTO> listEstu = this.estudianteService.buscarTodosTO();
+
+		for (EstudianteTO estTo : listEstu) {
+
+			Link link = linkTo(methodOn(EstudianteControllerRestFul.class).conusltarMateriasPorId(estTo.getId()))
+					.withRel("materias");
+			estTo.add(link);
+
+		}
+
+		return ResponseEntity.status(HttpStatus.OK).body(listEstu);
+
+	}
+
+	// UPDATE
+
+	@PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public void actualizar(@RequestBody EstudianteTO estudianteTO, @PathVariable Integer id) {
+
+		estudianteTO.setId(id);
+
+		this.estudianteService.actualizar(estudianteTO);
+	}
+
+	// DELETE
 	@DeleteMapping(path = "/{id}")
 	public void borrar(@PathVariable Integer id) {
 		this.estudianteService.borrar(id);
-		
-	}
-	//http://localhost:8080/API/v1.0/Matricula/estudiantes/buscarTodos?genero=M
-	//http://localhost:8080/API/v1.0/Matricula/estudiantes/buscarTodos?genero=M&edad=100
-	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "/temp")
-	public ResponseEntity<List<Estudiante>>  buscarTodos(@RequestParam(required = false, defaultValue = "M") String genero) {
-		
-		List<Estudiante> listEstu= this.estudianteService.buscarTodos(genero);
-		
-		
-		HttpHeaders cabecera = new HttpHeaders();
-		
-		cabecera.add("mensaje_242", "Lista consultada con filtros de manera satisfactoria");
-		cabecera.add("mensaje_info", "El sistema corroboró la busqueda");
-		//new ResponseEntity<>(body, cabecera, cod http)
-		return new ResponseEntity<>(listEstu,cabecera,242 );
-		
+
 	}
 
-	
-	
-	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<EstudianteTO>>  buscarTodosHateoas() {
-		
-		List<EstudianteTO> listEstu= this.estudianteService.buscarTodosTO();
-		
-		for( EstudianteTO estTo: listEstu) {
-			
-			Link link = linkTo(methodOn(EstudianteControllerRestFul.class).conusltarMateriasPorId(estTo.getId())).withRel("materias");
-			
-		
-			
-			estTo.add(link);
-			
-		}
-		
-		
-		return  ResponseEntity.status(HttpStatus.OK).body(listEstu);
-		
-	}
-	
-	//http://localhost:8080/API/v1.0/Matricula/estudiantes/
+	// --------------------------------------------------------
+	// http://localhost:8080/API/v1.0/Matricula/estudiantes/
 	@GetMapping(path = "/{id}/materias", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<MateriaTO>> conusltarMateriasPorId(@PathVariable Integer id){
-		
-		List<MateriaTO> listMaterias =this.materiaService.buscarPorIdEstudinate(id);
-		
+	public ResponseEntity<List<MateriaTO>> conusltarMateriasPorId(@PathVariable Integer id) {
+
+		List<MateriaTO> listMaterias = this.materiaService.buscarPorIdEstudinate(id);
+
 		return ResponseEntity.status(HttpStatus.OK).body(listMaterias);
 	}
-	
-	
-	
-	@GetMapping(path = "/completo/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<EstudianteTO>  buscarTO(@PathVariable Integer id) {
-		
-				
-		EstudianteTO estu = this.estudianteService.buscarTO(id);
-		
-		Link link = linkTo(methodOn(EstudianteControllerRestFul.class).conusltarMateriasPorId(estu.getId())).withRel("materias");
-	
-		estu.add(link);
 
-		return ResponseEntity.status(240).body(estu);
-	
-	}
-	
 	@GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<EstudianteLigeroTO>  buscarLigeroTO(@PathVariable Integer id) {
-		
-				
+	public ResponseEntity<EstudianteLigeroTO> buscarLigeroTO(@PathVariable Integer id) {
+
 		EstudianteLigeroTO estu = this.estudianteService.buscarEstudianteLigeroTO(id);
-		
+
 		Link link = linkTo(methodOn(EstudianteControllerRestFul.class).buscarTO(estu.getId())).withSelfRel();
-		
+
 		estu.add(link);
 
-		return ResponseEntity.status(240).body(estu);
-	
-	}
+		return ResponseEntity.status(HttpStatus.OK).body(estu);
 
+	}
 }
