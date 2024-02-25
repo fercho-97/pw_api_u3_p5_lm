@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.example.demo.repository.modelo.Estudiante;
 
-import jakarta.persistence.Query;
+
 
 public interface IEstudianteRepository {
 	
